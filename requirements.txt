@@ -1,0 +1,10 @@
+streamlit
+pandas
+matplotlib
+seaborn
+folium
+streamlit-folium
+googlemaps
+google-cloud-bigquery
+db-dtypes
+pyarrow
