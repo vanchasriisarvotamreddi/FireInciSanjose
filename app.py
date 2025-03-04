@@ -4,22 +4,25 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import folium
 from streamlit_folium import folium_static
-import json
 import os
-from google.cloud import bigquery
 import googlemaps
+from google.cloud import bigquery
 from google.oauth2 import service_account
 
 # -----------------------------------------------------------------------------
 # ✅ Load BigQuery Credentials from Streamlit Secrets
 # -----------------------------------------------------------------------------
 try:
+    # Make sure your secrets.toml has [gcp_service_account] ...
     service_account_info = st.secrets["gcp_service_account"]
     credentials = service_account.Credentials.from_service_account_info(service_account_info)
-    client = bigquery.Client(credentials=credentials, project=service_account_info["project_id"])
+    client = bigquery.Client(
+        credentials=credentials,
+        project=service_account_info["project_id"]
+    )
 except Exception as e:
     st.error(f"❌ Error loading Google Cloud credentials: {e}")
-    st.stop()
+    st.stop()  # Stop execution if authentication fails
 
 # -----------------------------------------------------------------------------
 # ✅ Load BigQuery Data
@@ -89,8 +92,8 @@ st.pyplot(plt)
 st.subheader("Top Streets with Most Incidents")
 top_streets = df_filtered['Street_Name'].value_counts().head(5).index.tolist()
 
-# Load Google Maps API Key from Environment Variables (or default)
-GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY", "AIzaSyCamuR8W78B_TiD8WoltXnWgmk_nprqf3k")
+# Load Google Maps API Key from environment or fallback
+GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY", "YOUR_FALLBACK_API_KEY")
 gmaps = googlemaps.Client(key=GOOGLE_MAPS_API_KEY)
 
 def get_lat_lon(street_name, city="San Jose", state="CA"):
