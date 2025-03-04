@@ -92,8 +92,13 @@ st.pyplot(plt)
 st.subheader("Top Streets with Most Incidents")
 top_streets = df_filtered['Street_Name'].value_counts().head(5).index.tolist()
 
-# Load Google Maps API Key from environment or fallback
-GOOGLE_MAPS_API_KEY = os.getenv("GOOGLE_MAPS_API_KEY", "YOUR_FALLBACK_API_KEY")
+# Load Google Maps API Key from secrets
+try:
+    GOOGLE_MAPS_API_KEY = st.secrets["google_maps"]["api_key"]
+except KeyError:
+    st.error("❌ Google Maps API Key not found in secrets! Make sure [google_maps].api_key is set.")
+    st.stop()
+
 gmaps = googlemaps.Client(key=GOOGLE_MAPS_API_KEY)
 
 def get_lat_lon(street_name, city="San Jose", state="CA"):
